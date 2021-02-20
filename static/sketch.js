@@ -205,15 +205,16 @@ class BoardDisplay {
           this.diam);
       }
     }
-  }
 
-  showMoveChoice(col) { 
-    fill(255, 80)
+    fill(255, 80);
     rect(
       this.buffer/2, 
       this.buffer/2, width - this.buffer, 
       this.diam + this.buffer
     );
+  }
+
+  showMoveChoice(col) { 
     if (col >= 0) {
       fill(this.colorMap(board.player, 180));
       circle(
@@ -306,12 +307,13 @@ function setup() {
   display.showNewGameButton();
 }
 
-
 function draw() {
   if (inGame) {
-    let col = display.columnFromPos(mouseX, mouseY);
-    display.showBoard(board);
-    display.showMoveChoice(col);
+    if (board.player == 1) {
+      let col = display.columnFromPos(mouseX, mouseY);
+      display.showBoard(board);
+      display.showMoveChoice(col);
+    }
   } else {
     display.showBoard(board);
     display.showWinner(winner);
