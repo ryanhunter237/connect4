@@ -24,7 +24,7 @@ def move():
 	else:
 		return render_template('index.html')
 
-def get_ai(playouts=250):
+def get_ai(playouts=150):
 	mover = RandomMover()
 	scorer = RolloutScorer(mover)
 	return MCTSPlayer(playouts, scorer, np.sqrt(2))
