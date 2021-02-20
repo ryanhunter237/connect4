@@ -18,13 +18,16 @@ def move():
 		player = int(data['player'])
 		col = int(data['col'])
 		gamestate = GameState.from_board(board, player, col)
-		move = int(mcts.move(gamestate))
+		ai = get_ai()
+		move = int(ai.move(gamestate))
 		return jsonify(move)
 	else:
 		return render_template('index.html')
 
-if __name__ == "__main__":
+def get_ai(playouts=250):
 	mover = RandomMover()
 	scorer = RolloutScorer(mover)
-	mcts = MCTSPlayer(250, scorer, np.sqrt(2))
+	return MCTSPlayer(playouts, scorer, np.sqrt(2))
+
+if __name__ == "__main__":
 	app.run(debug=True)

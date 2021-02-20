@@ -119,9 +119,9 @@ class MCTSPlayer:
         # The child of the root node with the highest visit count is chosen.
         for child in root.children:
             col = np.where(root.gamestate.board - child.gamestate.board)[1][0]
-            print("col = {}".format(col))
-            print("score = {}".format(child.score))
-            print("visit count = {}".format(child.visit_count))
+            #print("col = {}".format(col))
+            #print("score = {}".format(child.score))
+            #print("visit count = {}".format(child.visit_count))
 
         max_visit_node = max(root.children, key=lambda node : node.visit_count)
         col = np.where(root.gamestate.board - max_visit_node.gamestate.board)[1][0]
