@@ -4,6 +4,7 @@ let inGame = false;
 let newGameButton;
 let board;
 let winner = -1;
+let lastMove = -1;
 
 class Board {
   constructor() {
@@ -30,6 +31,7 @@ class Board {
           display.showNewGameButton();
         }
         this.player = 1 + (this.player % 2);
+        lastMove = col;
         return;
       }
     }
@@ -276,27 +278,29 @@ function makeMove() {
   if ((inGame) && (board.player == 1) && (col != -1)) {
     board.addPiece(col);
     display.showBoard(board);
-    // then make computer move for player 2
-    if (inGame) {
-      var gamestate = {
-      "board" : board.pieces,
-      "player" : board.player,
-      "col" : col
-      }
-      $.ajax({
-        url: "/move",
-        type: "POST",
-        data: JSON.stringify(gamestate),
-        contentType:"application/json; charset=utf-8",
-        }
-      ).done(
-        function(col) {
-          board.addPiece(col);
-          display.showBoard(board);
-        }
-      ); 
-    }
   } 
+}
+
+function makeComputerMove() {
+  var gamestate = {
+    "board" : board.pieces,
+    "player" : board.player,
+    "col" : lastMove
+  };
+  noLoop();
+  $.ajax({
+    url: "/move",
+    type: "POST",
+    data: JSON.stringify(gamestate),
+    contentType:"application/json; charset=utf-8",
+    }
+  ).done(
+    function(col) {
+      board.addPiece(col);
+      display.showBoard(board);
+      loop();
+    }
+  ); 
 }
 
 function setup() {
@@ -313,6 +317,8 @@ function draw() {
       let col = display.columnFromPos(mouseX, mouseY);
       display.showBoard(board);
       display.showMoveChoice(col);
+    } else {
+      makeComputerMove();
     }
   } else {
     display.showBoard(board);
