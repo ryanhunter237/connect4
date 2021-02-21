@@ -84,10 +84,10 @@ class MCTSPlayer:
         # Stop if this node has unexplored columns. Expand one of the children and return the child node.
         # Stop if this node has a game over GameState.  Return this node.
         # Otherwise, traverse to the node which is the best child of this node.
-        if len(node.unexplored_cols) > 0:
-            return node.expand()
-        elif node.gamestate.status != -1:
+        if node.gamestate.status != -1:
             return node
+        elif len(node.unexplored_cols) > 0:
+            return node.expand()
         else:
             return self.traverse(node.best_child(self.explore_rate))
 
