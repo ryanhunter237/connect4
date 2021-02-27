@@ -28,7 +28,7 @@ class Board {
         this.updateWinner(j, col);
         if (winner != -1) {
           inGame = false;
-          display.showNewGameButton();
+          newGameButton.show();
         }
         this.player = 1 + (this.player % 2);
         lastMove = col;
@@ -246,21 +246,6 @@ class BoardDisplay {
     }
   }
 
-  makeNewGameButton() {
-    newGameButton = createButton('New Game');
-    newGameButton.style('font-size', '32px');
-    newGameButton.style('font-weight', 'bold');
-    newGameButton.style('background-color', color(0,250,100,170));
-    newGameButton.size(200);
-    newGameButton.position(width/2 - 100, 0.445 * height);
-    newGameButton.mousePressed(startNewGame);
-    newGameButton.hide();
-  }
-  
-  showNewGameButton() {  
-    newGameButton.show();
-  }
-
   columnFromPos(x, y) {
     for (let i = 0; i < nCols; i++) {
       if (abs(x - this.xCenters[i]) <= this.diam / 2) {
@@ -313,8 +298,8 @@ function setup() {
   cnv.mousePressed(makeMove);
   board = new Board();
   display = new BoardDisplay();
-  display.makeNewGameButton();
-  display.showNewGameButton();
+  newGameButton = makeNewGameButton(width, height, startNewGame);
+  newGameButton.show();
 }
 
 function draw() {
