@@ -245,8 +245,8 @@ class BoardDisplay {
       text("Player " + winner + " wins", width/2, 45);
     }
   }
-  
-  showNewGameButton() {  
+
+  makeNewGameButton() {
     newGameButton = createButton('New Game');
     newGameButton.style('font-size', '32px');
     newGameButton.style('font-weight', 'bold');
@@ -254,6 +254,11 @@ class BoardDisplay {
     newGameButton.size(200);
     newGameButton.position(width/2 - 100, 0.445 * height);
     newGameButton.mousePressed(startNewGame);
+    newGameButton.hide();
+  }
+  
+  showNewGameButton() {  
+    newGameButton.show();
   }
 
   columnFromPos(x, y) {
@@ -308,6 +313,7 @@ function setup() {
   cnv.mousePressed(makeMove);
   board = new Board();
   display = new BoardDisplay();
+  display.makeNewGameButton();
   display.showNewGameButton();
 }
 
