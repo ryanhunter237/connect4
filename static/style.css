@@ -6,12 +6,7 @@ canvas {
   display: block;
 }
 
-/*
-body {
-  margin: 0;
-  display: flex;
-
-  justify-content: center;
-  align-items: center;
+button:focus,
+button:active {
+	outline: 0;
 }
-*/

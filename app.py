@@ -17,8 +17,9 @@ def move():
 		board = np.array(data['board'])
 		player = int(data['player'])
 		col = int(data['col'])
+		level = int(data['level'])
 		gamestate = GameState.from_board(board, player, col)
-		ai = get_ai()
+		ai = get_ai(playouts=150 + 200 * (level - 1))
 		move = int(ai.move(gamestate))
 		return jsonify(move)
 	else:

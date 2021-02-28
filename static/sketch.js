@@ -11,9 +11,9 @@ function makeNewGameButton() {
   newGameButton = createButton('New Game');
   newGameButton.style('font-size', '32px');
   newGameButton.style('font-weight', 'bold');
-  newGameButton.style('background-color', color(0,250,100,170));
+  newGameButton.style('background-color', color(0,250,100));
   newGameButton.size(200);
-  newGameButton.position(width/2 - 100, 0.445 * height);
+  newGameButton.position(100, 100);
   newGameButton.mousePressed(startNewGame);
 }
 
@@ -22,7 +22,7 @@ function makeLevelButtons() {
   for (let i = 0; i < 5; i++) {
     let button = createButton('Level ' + (i + 1));
     let c = color(100, 250 - 50 * i, 150);
-    button.position(50, 50 + 35 * i);
+    button.position(120, 155 + 35 * i);
     button.style('padding', '3px 7px');
     button.style('border', '2px solid');
     button.style('border-color', c);
@@ -32,6 +32,7 @@ function makeLevelButtons() {
     });
     levelButtons.push(button);
   }
+  chooseLevel(levelButtons[0], 1);
 }
 
 function chooseLevel(selectedButton, buttonLevel) {
@@ -39,7 +40,7 @@ function chooseLevel(selectedButton, buttonLevel) {
   levelButtons.forEach(function(button) {
     if (button == selectedButton) {
       let c = color(selectedButton.style('border-color'));
-      c.setAlpha(100);
+      //c.setAlpha(100);
       button.style('background-color', c);
     } else {
       button.style('background-color', color(240));
@@ -51,7 +52,7 @@ function makePlayerButtons() {
   playerButtons = Array();
   for (let i = 0; i < 2; i++) {
     let button = createButton("")
-    button.position(150, 67 + 80*i);
+    button.position(230, 170 + 80*i);
     button.style('width', '50px');
     button.style('height', '50px');
     button.style('border-radius', '100%');
@@ -67,6 +68,7 @@ function makePlayerButtons() {
     });
     playerButtons.push(button);
   }
+  choosePlayer(playerButtons[0], 1)
 }
 
 function choosePlayer(selectedButton, buttonPlayer) {
@@ -74,7 +76,7 @@ function choosePlayer(selectedButton, buttonPlayer) {
   playerButtons.forEach(function(button) {
     if (button == selectedButton) {
       let c = color(selectedButton.style('border-color'));
-      c.setAlpha(170);
+      //c.setAlpha(170);
       button.style('background-color', c);
     } else {
       button.style('background-color', color(240));
@@ -173,7 +175,7 @@ class BoardDisplay {
   }
 
   showWinner() {
-    fill(255, 80)
+    fill(80,80,150);
     rect(
       this.buffer/2, 
       this.buffer/2, width - this.buffer, 
@@ -201,13 +203,17 @@ class BoardDisplay {
       }
     }
     return -1;
-  }s
+  }
+
+  showBox() {
+    fill(80,80,150);
+    rect(90,90,220,240);
+  }
 }
 
 function startNewGame() {
   inGame = true;
   board = new Board(6, 7);
-  print(board.pieces);
   hideButtons();
   display.showBoard()
 }
@@ -228,7 +234,8 @@ function makeComputerMove() {
   var gamestate = {
     "board" : board.pieces,
     "player" : board.player,
-    "col" : board.lastMove
+    "col" : board.lastMove,
+    "level" : level
   };
   noLoop();
   $.ajax({
@@ -272,6 +279,7 @@ function draw() {
     }
   } else {
     display.showBoard();
+    display.showBox();
     display.showWinner();
   }
 }
