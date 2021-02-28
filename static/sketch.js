@@ -1,181 +1,127 @@
-let nRows = 6;
-let nCols = 7;
 let inGame = false;
-let newGameButton;
 let board;
-let winner = -1;
-let lastMove = -1;
 
-class Board {
-  constructor() {
-    this.pieces = [];
-    for (let i = 0; i < nRows; i++) {
-      this.pieces[i] = [];
-      for (let j = 0; j < nCols; j++) {
-        this.pieces[i][j] = 0;
-      }
-    }
-    this.player = 1;
-  }
+let newGameButton;
+let levelButtons;
+let level = 1;
+let playerButtons;
+let player = 1;
 
-  addPiece(col) {
-    if (this.pieces[0][col] != 0) {
-      return;
-    }
-    for (let j = nRows - 1; j >= 0; j--) {
-      if (this.pieces[j][col] == 0) {
-        this.pieces[j][col] = this.player;
-        this.updateWinner(j, col);
-        if (winner != -1) {
-          inGame = false;
-          newGameButton.show();
-        }
-        this.player = 1 + (this.player % 2);
-        lastMove = col;
-        return;
-      }
-    }
-  }
+function makeNewGameButton() {
+  newGameButton = createButton('New Game');
+  newGameButton.style('font-size', '32px');
+  newGameButton.style('font-weight', 'bold');
+  newGameButton.style('background-color', color(0,250,100,170));
+  newGameButton.size(200);
+  newGameButton.position(width/2 - 100, 0.445 * height);
+  newGameButton.mousePressed(startNewGame);
+}
 
-  boardFull() {
-    for (let j = 0; j < nCols; j++) {
-      if (this.pieces[0][j] == 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  updateWinner(row, col) {
-    // row, col was the last move played
-    if (
-      this.connectedCol(row, col) ||
-      this.connectedRow(row, col) ||
-      this.connectedNegDiag(row, col) ||
-      this.connectedPosDiag(row, col)
-    ) {
-      winner = this.pieces[row][col];
-    } else if (this.boardFull()) {
-      winner = 0; // for a tie
-    } else {
-      winner = -1; // game not over
-    }
-  }
-
-  connectedCol(row, col) {
-    let piece = this.pieces[row][col];
-    let nConnected = 1;
-    let i = row + 1;
-    while (i < nRows) {
-      if (this.pieces[i][col] == piece) {
-        nConnected++;
-        i++;
-      } else {
-        break;
-      }
-    }
-    return (nConnected >= 4);
-  }
-
-  connectedRow(row, col) {
-    let piece = this.pieces[row][col];
-    let nConnected = 1;
-    let j = col + 1;
-    while (j < nCols) {
-      if (this.pieces[row][j] == piece) {
-        nConnected++;
-        j++;
-      } else {
-        break;
-      }
-    }
-    j = col - 1;
-    while (j >= 0) {
-      if (this.pieces[row][j] == piece) {
-        nConnected++;
-        j--;
-      } else {
-        break;
-      }
-    }
-    return (nConnected >= 4);
-  }
-
-  connectedNegDiag(row, col) {
-    let piece = this.pieces[row][col];
-    let nConnected = 1;
-    let i = row + 1;
-    let j = col + 1;
-    while ((i < nRows) && (j < nCols)) {
-      if (this.pieces[i][j] == piece) {
-        nConnected++;
-        i++;
-        j++;
-      } else {
-        break;
-      }
-    }
-    i = row - 1;
-    j = col - 1;
-    while ((i >= 0) && (j >= 0)) {
-      if (this.pieces[i][j] == piece) {
-        nConnected++;
-        i--;
-        j--;
-      } else {
-        break;
-      }
-    }
-    return (nConnected >= 4);
-  }
-
-  connectedPosDiag(row, col) {
-    let piece = this.pieces[row][col];
-    let nConnected = 1;
-    let i = row + 1;
-    let j = col - 1;
-    while ((i < nRows) && (j >= 0)) {
-      if (this.pieces[i][j] == piece) {
-        nConnected++;
-        i++;
-        j--;
-      } else {
-        break;
-      }
-    }
-    i = row - 1;
-    j = col + 1;
-    while ((i >= 0) && (j < nCols)) {
-      if (this.pieces[i][j] == piece) {
-        nConnected++;
-        i--;
-        j++;
-      } else {
-        break;
-      }
-    }
-    return (nConnected >= 4);
+function makeLevelButtons() {
+  levelButtons = Array();
+  for (let i = 0; i < 5; i++) {
+    let button = createButton('Level ' + (i + 1));
+    let c = color(100, 250 - 50 * i, 150);
+    button.position(50, 50 + 35 * i);
+    button.style('padding', '3px 7px');
+    button.style('border', '2px solid');
+    button.style('border-color', c);
+    button.style('background-color', color(240));
+    button.mousePressed(function() {
+      chooseLevel(button, i+1);
+    });
+    levelButtons.push(button);
   }
 }
 
+function chooseLevel(selectedButton, buttonLevel) {
+  level = buttonLevel
+  levelButtons.forEach(function(button) {
+    if (button == selectedButton) {
+      let c = color(selectedButton.style('border-color'));
+      c.setAlpha(100);
+      button.style('background-color', c);
+    } else {
+      button.style('background-color', color(240));
+    }
+  });
+}
+
+function makePlayerButtons() {
+  playerButtons = Array();
+  for (let i = 0; i < 2; i++) {
+    let button = createButton("")
+    button.position(150, 67 + 80*i);
+    button.style('width', '50px');
+    button.style('height', '50px');
+    button.style('border-radius', '100%');
+    button.style('border', '2px solid');
+    if (i == 0) {
+      button.style('border-color', color(255, 0, 0));
+    } else {
+      button.style('border-color', color(255, 255, 0));
+    }
+    button.style('background-color', color(240));
+    button.mousePressed(function() {
+      choosePlayer(button, i+1);
+    });
+    playerButtons.push(button);
+  }
+}
+
+function choosePlayer(selectedButton, buttonPlayer) {
+  player = buttonPlayer;
+  playerButtons.forEach(function(button) {
+    if (button == selectedButton) {
+      let c = color(selectedButton.style('border-color'));
+      c.setAlpha(170);
+      button.style('background-color', c);
+    } else {
+      button.style('background-color', color(240));
+    }
+  });
+}
+
+function hideButtons() {
+  newGameButton.hide();
+  levelButtons.forEach(function(button) {
+    button.hide();
+  })
+  playerButtons.forEach(function(button) {
+    button.hide();
+  })
+}
+
+function showButtons() {
+  newGameButton.show();
+  levelButtons.forEach(function(button) {
+    button.show();
+  })
+  playerButtons.forEach(function(button) {
+    button.show();
+  })
+}
+
 class BoardDisplay {
-  constructor() {
+  constructor(nRows, nCols) {
+    this.nCols = nCols
+    this.nRows = nRows
     this.buffer = 4
-    this.diam = (width - this.buffer * (nCols + 1)) / nCols;
+    this.diam = (width - this.buffer * (this.nCols + 1)) / this.nCols;
 
     let offset = this.buffer + this.diam / 2;
     let increment = this.buffer + this.diam
 
     this.xCenters = [];
-    for (let i = 0; i < nCols; i++) {
+    for (let i = 0; i < this.nCols; i++) {
       this.xCenters[i] = offset + i * increment;
     }
     this.yCenters = [];
-    for (let i = 0; i < nRows; i++) {
+    for (let i = 0; i < this.nRows; i++) {
       this.yCenters[i] = offset + i * increment;
     }
-    let yShift = height - this.yCenters[nRows - 1] - offset;
-    for (let i = 0; i < nRows; i++) {
+    let yShift = height - this.yCenters[this.nRows - 1] - offset;
+    for (let i = 0; i < this.nRows; i++) {
       this.yCenters[i] += yShift;
     }
     
@@ -194,12 +140,11 @@ class BoardDisplay {
     }
   }
 
-  showBoard(board) {
+  showBoard() {
     background(0, 0, 150);
     noStroke();
-
-    for (let i = 0; i < nRows; i++) {
-      for (let j = 0; j < nCols; j++) {
+    for (let i = 0; i < this.nRows; i++) {
+      for (let j = 0; j < this.nCols; j++) {
         fill(this.colorMap(board.pieces[i][j]));
         circle(
           this.xCenters[j],
@@ -234,48 +179,56 @@ class BoardDisplay {
       this.buffer/2, width - this.buffer, 
       this.diam + this.buffer
     );
+    if (board.status == -1) {
+      return;
+    }
     fill(0);
     noStroke();
     textStyle(BOLD);
     textAlign(CENTER);
     textSize(32);
-    if (winner == 0) {
+    if (board.status == 0) {
       text("Tie game", width/2, 45);
-    } if ((winner == 1) || (winner == 2)) {
-      text("Player " + winner + " wins", width/2, 45);
+    } else {
+      text("Player " + board.status + " wins", width/2, 45);
     }
   }
 
   columnFromPos(x, y) {
-    for (let i = 0; i < nCols; i++) {
+    for (let i = 0; i < this.nCols; i++) {
       if (abs(x - this.xCenters[i]) <= this.diam / 2) {
         return i;
       }
     }
     return -1;
-  }
+  }s
 }
 
 function startNewGame() {
   inGame = true;
-  board = new Board();
-  display.showBoard(board)
-  newGameButton.hide()
+  board = new Board(6, 7);
+  print(board.pieces);
+  hideButtons();
+  display.showBoard()
 }
 
 function makeMove() {
   let col = display.columnFromPos(mouseX, mouseY);
-  if ((inGame) && (board.player == 1) && (col != -1)) {
+  if ((inGame) && (board.player == player) && (col != -1)) {
     board.addPiece(col);
-    display.showBoard(board);
-  } 
+    display.showBoard();
+    if (board.status != -1) {
+      inGame = false
+      showButtons();
+    }
+  }
 }
 
 function makeComputerMove() {
   var gamestate = {
     "board" : board.pieces,
     "player" : board.player,
-    "col" : lastMove
+    "col" : board.lastMove
   };
   noLoop();
   $.ajax({
@@ -287,7 +240,11 @@ function makeComputerMove() {
   ).done(
     function(col) {
       board.addPiece(col);
-      display.showBoard(board);
+      display.showBoard();
+      if (board.status != -1) {
+        inGame = false
+        showButtons();
+      }
       loop();
     }
   ); 
@@ -296,23 +253,25 @@ function makeComputerMove() {
 function setup() {
   cnv = createCanvas(400, 400);
   cnv.mousePressed(makeMove);
-  board = new Board();
-  display = new BoardDisplay();
-  newGameButton = makeNewGameButton(width, height, startNewGame);
-  newGameButton.show();
+  board = new Board(6, 7);
+  display = new BoardDisplay(6, 7);
+  display.showBoard();
+  makeNewGameButton();
+  makeLevelButtons();
+  makePlayerButtons();
 }
 
 function draw() {
   if (inGame) {
-    if (board.player == 1) {
+    if (board.player == player) {
       let col = display.columnFromPos(mouseX, mouseY);
-      display.showBoard(board);
+      display.showBoard();
       display.showMoveChoice(col);
     } else {
       makeComputerMove();
     }
   } else {
-    display.showBoard(board);
-    display.showWinner(winner);
+    display.showBoard();
+    display.showWinner();
   }
 }

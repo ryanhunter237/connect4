@@ -123,6 +123,8 @@ class GameState:
 		"""Create the GameState from the board, the current player, 
 		and the column of the last move played
 		"""
+		if col == -1:
+			return GameState.empty()
 		row = np.min(np.argwhere(board[:,col] != 0))
 		status = game_status(board, row, col)
 		return cls(board, player, status)
