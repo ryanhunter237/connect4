@@ -6,6 +6,8 @@ from mcts import MCTSPlayer, RandomMover, RolloutScorer
 
 app = Flask(__name__)
 
+level2playouts = {1:125, 2:250, 3:500, 4:1000, 5:2000}
+
 @app.route('/')
 def index():
 	return render_template("index.html")
@@ -19,11 +21,12 @@ def move():
 		col = int(data['col'])
 		level = int(data['level'])
 		gamestate = GameState.from_board(board, player, col)
-		ai = get_ai(playouts=150 + 200 * (level - 1))
+		ai = get_ai(playouts=level2playouts[level])
 		move = int(ai.move(gamestate))
 		return jsonify(move)
 	else:
 		return render_template('index.html')
+
 
 def get_ai(playouts=150):
 	mover = RandomMover()
